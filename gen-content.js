@@ -30,7 +30,7 @@ directories.forEach((directory) => {
       );
       subDirPaths.forEach((subDirPath, subDirPathIndex) => {
         $image = $(
-          `<img src="content/${topLevelPath}/${subDirPath}" loading="lazy" onclick="window.location.href = '/${directory}/content/${topLevelPath}/${subDirPath}'"/>`
+          `<img src="content/${topLevelPath}/${subDirPath}" loading="lazy" onclick="window.location.href = '/portfolio/${directory}/content/${topLevelPath}/${subDirPath}'"/>`
         );
         if (subDirPathIndex === 0) {
           $image.attr("class", "visible");
@@ -51,7 +51,7 @@ directories.forEach((directory) => {
     } else {
       $flexContainer.append(
         $(
-          `<div class="gallery-image"><img src="content/${topLevelPath}" loading="lazy" onclick="window.location.href = '/${directory}/content/${topLevelPath}'"/></div>`
+          `<div class="gallery-image"><img src="content/${topLevelPath}" loading="lazy" onclick="window.location.href = '/portfolio/${directory}/content/${topLevelPath}'"/></div>`
         )
       );
     }
