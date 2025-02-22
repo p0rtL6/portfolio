@@ -30,7 +30,7 @@ require("yargs")
       });
     },
     (argv) => {
-      generate(argv.d, argv.b, argv.c, argv.s);
+      generate(argv.d, processBaseUrl(argv.b), argv.c, argv.s);
     }
   )
   .command(
@@ -69,7 +69,7 @@ require("yargs")
       });
     },
     (argv) => {
-      configure(argv.d, argv.o, argv.b, argv.g, argv.p);
+      configure(argv.d, argv.o, processBaseUrl(argv.b), argv.g, argv.p);
     }
   )
   .command(
@@ -84,10 +84,18 @@ require("yargs")
       });
     },
     (argv) => {
-      preview(argv.b);
+      preview(processBaseUrl(argv.b));
     }
   )
   .help().argv;
+
+function processBaseUrl(baseUrl) {
+  if (baseUrl !== "") {
+    return "/" + baseUrl
+  } else {
+    return baseUrl
+  }
+}
 
 function generate(directories, baseUrl, configPath = null, sortBy = "name") {
   const cheerio = require("cheerio");
@@ -108,7 +116,7 @@ function generate(directories, baseUrl, configPath = null, sortBy = "name") {
   $("head")
     .find('meta[http-equiv="refresh"]')
     .each((i, element) => {
-      $(element).attr("content", `0;url=/${baseUrl}/${directories[0]}`);
+      $(element).attr("content", `0;url=${baseUrl}/${directories[0]}`);
     });
 
   console.log("creating navbar entries...");
@@ -117,7 +125,7 @@ function generate(directories, baseUrl, configPath = null, sortBy = "name") {
   directories.forEach((directory) => {
     $navbar.append(
       $(
-        `<a href=/${baseUrl}/${directory}>${directory
+        `<a href=${baseUrl}/${directory}>${directory
           .charAt(0)
           .toUpperCase()}${directory.slice(1)}</a>`
       )
@@ -178,7 +186,7 @@ function generate(directories, baseUrl, configPath = null, sortBy = "name") {
     $navbar = $(".navbar");
     directories.forEach((navbarDirectory) => {
       $navbarEntry = $(
-        `<a href=/${baseUrl}/${navbarDirectory}>${navbarDirectory
+        `<a href=${baseUrl}/${navbarDirectory}>${navbarDirectory
           .charAt(0)
           .toUpperCase()}${navbarDirectory.slice(1)}</a>`
       );
@@ -211,7 +219,7 @@ function generate(directories, baseUrl, configPath = null, sortBy = "name") {
         );
         subDirPaths.forEach((subDirPath, subDirPathIndex) => {
           $image = $(
-            `<img src="content/${itemName}/${subDirPath}" loading="lazy" onclick="window.location.href = '/portfolio/${directory}/content/${itemName}/${subDirPath}'"/>`
+            `<img src="content/${itemName}/${subDirPath}" loading="lazy" onclick="window.location.href = '${baseUrl}/${directory}/content/${itemName}/${subDirPath}'"/>`
           );
           if (subDirPathIndex === 0) {
             $image.attr("class", "visible");
@@ -233,7 +241,7 @@ function generate(directories, baseUrl, configPath = null, sortBy = "name") {
         console.log("creating image...");
         $flexContainer.append(
           $(
-            `<div class="gallery-image" id="${itemName}"><img src="content/${itemName}" loading="lazy" onclick="window.location.href = '/portfolio/${directory}/content/${itemName}'"/></div>`
+            `<div class="gallery-image" id="${itemName}"><img src="content/${itemName}" loading="lazy" onclick="window.location.href = '${baseUrl}/${directory}/content/${itemName}'"/></div>`
           )
         );
       }
@@ -482,7 +490,7 @@ function preview(baseUrl) {
   const express = require("express");
 
   const app = express();
-  app.use(`/${baseUrl}`, express.static(__dirname));
+  app.use(`${baseUrl}`, express.static(__dirname));
 
   const PORT = 3000;
   app.listen(PORT, () => {
@@ -490,7 +498,7 @@ function preview(baseUrl) {
     console.log("Press ctrl+c anytime to exit");
     (async () => {
       const { default: open } = await import("open");
-      open(`http://localhost:${PORT}/${baseUrl}`);
+      open(`http://localhost:${PORT}${baseUrl}`);
     })();
   });
 }
